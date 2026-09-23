@@ -1,0 +1,17 @@
+{
+  "name": "ระบบดูแลครุภัณฑ์และเครื่องมือวิทยาศาสตร์ — PSU:LASC",
+  "short_name": "LASC ครุภัณฑ์",
+  "description": "ทะเบียนครุภัณฑ์และเครื่องมือวิทยาศาสตร์ · บันทึกการบำรุงรักษา (PM) การสอบเทียบ และการซ่อมแซม · แจ้งเตือนกำหนดครั้งถัดไป — ศูนย์บริการสัตว์ทดลอง มหาวิทยาลัยสงขลานครินทร์",
+  "lang": "th",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#1d5a8f",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

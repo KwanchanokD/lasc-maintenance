@@ -1,0 +1,65 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "allowed": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
+
+    "data": {
+      "asset": {
+        ".read": "auth != null && root.child('allowed').child(auth.uid).exists()",
+
+        "equipment": {
+          "$eqId": {
+            ".write": "auth != null && root.child('allowed').child(auth.uid).val() === 'admin'"
+          }
+        },
+
+        "pm": {
+          "$eqId": {
+            "$pmId": {
+              ".write": "auth != null && root.child('allowed').child(auth.uid).exists() && (!data.exists() || root.child('allowed').child(auth.uid).val() === 'admin' || data.child('createdBy').val() === auth.uid)"
+            }
+          }
+        },
+
+        "calibration": {
+          "$eqId": {
+            "$calId": {
+              ".write": "auth != null && root.child('allowed').child(auth.uid).exists() && (!data.exists() || root.child('allowed').child(auth.uid).val() === 'admin' || data.child('createdBy').val() === auth.uid)"
+            }
+          }
+        },
+
+        "repair": {
+          "$eqId": {
+            "$repId": {
+              ".write": "auth != null && root.child('allowed').child(auth.uid).exists() && (!data.exists() || root.child('allowed').child(auth.uid).val() === 'admin' || data.child('createdBy').val() === auth.uid)"
+            }
+          }
+        },
+
+        "incomingFaults": {
+          "$id": {
+            ".write": "auth != null && root.child('allowed').child(auth.uid).exists()"
+          }
+        },
+
+        "users": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('allowed').child(auth.uid).exists()"
+          }
+        },
+
+        "settings": {
+          ".write": "auth != null && root.child('allowed').child(auth.uid).val() === 'admin'"
+        }
+      }
+    }
+  }
+}

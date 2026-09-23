@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบดูแลครุภัณฑ์และเครื่องมือวิทยาศาสตร์ (เจ้าหน้าที่) — PSU:LASC</title>
+<meta name="theme-color" content="#1d5a8f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1d5a8f; --primary-dark: #143f66; --primary-light: #e8f0f8;
+    --accent: #0e7c66; --danger: #c0392b; --warning: #b9770e;
+    --bg: #f4f6f9; --card: #fff; --text: #2c3e50; --muted: #6f7d86;
+    --border: #dfe6ee; --radius: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Sarabun','Leelawadee UI',Tahoma,sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; }
+
+  header.app-header {
+    background: radial-gradient(900px 200px at 88% -40%, rgba(255,255,255,.20), transparent 70%),
+                linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: #fff; padding: 14px 22px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); border-bottom: 3px solid var(--accent);
+  }
+  header.app-header .logo { background: #fff; border-radius: 50%; width: 54px; height: 54px; flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,.22); overflow: hidden; }
+  header.app-header .logo img { width: 100%; height: 100%; object-fit: cover; }
+  header.app-header h1 { font-size: 17px; font-weight: 600; }
+  header.app-header p { font-size: 12.5px; opacity: .85; }
+  header .who { margin-left: auto; display: flex; gap: 10px; align-items: center; font-size: 13px; flex-wrap: wrap; }
+  header .who .chip { background: rgba(255,255,255,.16); border-radius: 999px; padding: 4px 12px; }
+  header .who .chip.role-admin { background: rgba(255,255,255,.32); font-weight: 600; }
+  header .who button { background: rgba(255,255,255,.95); color: var(--primary-dark); border: none; border-radius: 7px;
+    padding: 5px 12px; font-family: inherit; font-size: 13px; cursor: pointer; }
+
+  nav.tabs { background: #fff; border-bottom: 1px solid var(--border); display: flex; gap: 2px; padding: 0 16px; overflow-x: auto; }
+  nav.tabs button { background: none; border: none; border-bottom: 3px solid transparent; padding: 11px 16px;
+    font-family: inherit; font-size: 14.5px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+  nav.tabs button.active { color: var(--primary-dark); border-bottom-color: var(--primary); font-weight: 600; }
+  .badge { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 999px;
+    background: var(--danger); color: #fff; font-size: 12px; line-height: 20px; text-align: center; }
+  .badge.warn { background: var(--warning); }
+  .badge.zero { display: none; }
+
+  .container { max-width: 1180px; margin: 0 auto; padding: 18px 16px 80px; }
+  .narrow { max-width: 460px; margin: 40px auto; }
+  .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border);
+          box-shadow: 0 1px 4px rgba(0,0,0,.05); margin-bottom: 18px; overflow: hidden; }
+  .card-head { padding: 11px 18px; background: var(--primary-light); border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .card-head h2 { font-size: 15.5px; font-weight: 600; color: var(--primary-dark); }
+  .card-head .hint { font-size: 12.5px; color: var(--muted); }
+  .card-head .right { margin-left: auto; }
+  .card-body { padding: 18px; }
+
+  .grid { display: grid; gap: 13px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .span-all { grid-column: 1 / -1; }
+  label.field { display: block; font-size: 13.5px; font-weight: 500; }
+  .req { color: var(--danger); }
+  label.field small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+  label.field input, label.field select, label.field textarea, .inp {
+    display: block; width: 100%; margin-top: 4px; padding: 8px 11px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-family: inherit; font-size: 14.5px; background: #fff; color: var(--text);
+  }
+  label.field input:focus, label.field select:focus, label.field textarea:focus, .inp:focus {
+    outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(29,90,143,.14);
+  }
+  label.field .bad { border-color: var(--danger); background: #fffafa; }
+  textarea { resize: vertical; min-height: 64px; line-height: 1.6; }
+  label.check { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  label.check input { margin-top: 4px; flex: none; width: 17px; height: 17px; accent-color: var(--primary); }
+
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border: none;
+         border-radius: 8px; font-family: inherit; font-size: 14.5px; font-weight: 500; cursor: pointer;
+         background: var(--primary); color: #fff; text-decoration: none; transition: background .15s; white-space: nowrap; }
+  .btn:hover { background: var(--primary-dark); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.secondary { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn.secondary:hover { background: var(--primary-light); }
+  .btn.ghost { background: #fff; color: var(--text); border: 1px solid var(--border); }
+  .btn.ghost:hover { background: #eef2f6; }
+  .btn.ok { background: var(--accent); } .btn.ok:hover { background: #0a5f4e; }
+  .btn.danger { background: #fff; color: var(--danger); border: 1px solid #e8b4ae; }
+  .btn.danger:hover { background: #fdecea; }
+  .btn.google { width: 100%; justify-content: center; gap: 10px; padding: 11px 16px; font-size: 15.5px;
+    background: #fff; color: #3c4043; border: 1px solid #dadce0; box-shadow: 0 1px 2px rgba(0,0,0,.06); white-space: normal; text-align: left; }
+  .btn.google svg { flex: none; }
+  .btn.google:hover { background: #f7f8f8; }
+  .btn.sm { padding: 5px 11px; font-size: 13px; border-radius: 7px; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  .alert { border-radius: 9px; padding: 10px 14px; font-size: 13.8px; margin-bottom: 12px; border: 1px solid; }
+  .alert.warn { background: #fdf3e2; border-color: #f0c987; color: #7a4f06; }
+  .alert.err  { background: #fdecea; border-color: #f5c6cb; color: #9c0006; }
+  .alert.info { background: #e8f1fa; border-color: #b9d4ee; color: #124a82; }
+  .alert.ok   { background: #e2efda; border-color: #a9d08e; color: #376e2a; }
+  .muted { color: var(--muted); }
+  .hidden { display: none !important; }
+  code, .mono { font-family: Consolas, 'Courier New', monospace; font-size: 13px; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .stat { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; cursor: pointer;
+          border-left: 4px solid var(--c, var(--primary)); transition: box-shadow .15s; }
+  .stat:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .stat.sel { background: var(--primary-light); }
+  .stat .n { font-size: 24px; font-weight: 700; line-height: 1.2; color: var(--c, var(--primary-dark)); }
+  .stat .t { font-size: 12.8px; color: var(--muted); }
+
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .toolbar .inp { width: auto; margin: 0; }
+  .toolbar .grow { flex: 1 1 220px; }
+  .toolbar select.inp { width: auto; }
+
+  .table-wrap { overflow-x: auto; }
+  table.list { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.list th, table.list td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  table.list th { background: #f7f9fb; color: var(--primary-dark); font-size: 13px; font-weight: 600; white-space: nowrap; }
+  table.list tbody tr { cursor: pointer; }
+  table.list tbody tr:hover { background: #f5f9fd; }
+  table.list .code { font-weight: 700; color: var(--primary-dark); white-space: nowrap; }
+
+  table.kv { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.kv th, table.kv td { border-bottom: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+  table.kv th { width: 30%; color: var(--primary-dark); font-weight: 600; background: #f8fafc; }
+
+  .thumb { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; background: #eef2f6; border: 1px solid var(--border); display: block; }
+  .thumb-ph { width: 42px; height: 42px; border-radius: 8px; background: #eef2f6; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--muted); }
+  .photo-big { width: 180px; height: 180px; border-radius: 12px; object-fit: cover; background: #eef2f6; border: 1px solid var(--border); flex: none; }
+  .photo-big-ph { width: 180px; height: 180px; border-radius: 12px; background: #eef2f6; border: 1px dashed var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--muted); flex: none; }
+
+  .est { display: inline-block; padding: 1px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; white-space: nowrap; border: 1px solid; }
+  .est-ok   { background: #e2efda; color: #2f6b22; border-color: #a9d08e; }
+  .est-soon { background: #fdf3e2; color: #8a5a06; border-color: #f0c987; }
+  .est-over { background: #fdecea; color: #a1241a; border-color: #f0b8b1; }
+  .est-fix  { background: #f1e9fb; color: #6a3fa0; border-color: #d5c1ef; }
+  .est-off  { background: #eef1f4; color: #5d6a73; border-color: #d3dae0; }
+  .cat-pill { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12px; background: #eef2f6; color: var(--text); border: 1px solid var(--border); white-space: nowrap; }
+
+  .detail-head { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 14px; }
+  .detail-head .info h2 { font-size: 20px; color: var(--primary-dark); margin-bottom: 4px; }
+  .detail-head .info .code { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .3px; }
+  .detail-head .badges { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+  .detail-head .actions { margin-left: auto; }
+
+  .subcard-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .subcard-head h2 { font-size: 15px; }
+
+  .void-row td { opacity: .55; text-decoration: line-through; }
+  .void-note { font-size: 12px; color: var(--danger); text-decoration: none; display: block; margin-top: 2px; }
+
+  /* ---------- ป๊อปอัป ---------- */
+  .modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(20,32,45,.55);
+    display: flex; align-items: flex-start; justify-content: center; padding: 30px 16px; overflow-y: auto; }
+  .modal-box { background: #fff; border-radius: 14px; width: 100%; max-width: 640px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.3); overflow: hidden; }
+  .modal-box.wide { max-width: 880px; }
+  .modal-box .card-body { max-height: 74vh; overflow-y: auto; }
+
+  .file-drop { border: 1.5px dashed var(--border); border-radius: 10px; padding: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .import-help { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 12.8px; color: var(--muted); }
+  .import-help b { color: var(--text); }
+
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+           background: #2c3e50; color: #fff; padding: 11px 22px; border-radius: 999px; font-size: 14px;
+           box-shadow: 0 4px 16px rgba(0,0,0,.25); z-index: 400; opacity: 0; pointer-events: none; transition: opacity .2s, bottom .2s; }
+  .toast.show { opacity: 1; bottom: 36px; }
+  footer.pg { text-align: center; color: var(--muted); font-size: 12.5px; padding: 10px 16px 30px; }
+  .empty { text-align: center; padding: 34px 10px; color: var(--muted); }
+
+  .alert-item { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: #fff;
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .alert-item.over { border-left: 4px solid var(--danger); }
+  .alert-item.soon { border-left: 4px solid var(--warning); }
+  .alert-item .main { flex: 1 1 260px; }
+  .alert-item .main b { color: var(--primary-dark); }
+  .alert-item .due { font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo"><img src="logo-lasc.png" alt="PSU:LASC"></div>
+  <div>
+    <h1>ระบบดูแลครุภัณฑ์และเครื่องมือวิทยาศาสตร์</h1>
+    <p>ศูนย์บริการสัตว์ทดลอง มหาวิทยาลัยสงขลานครินทร์ · สำหรับเจ้าหน้าที่เท่านั้น</p>
+  </div>
+  <div class="who hidden" id="whoBox">
+    <span class="chip" id="whoEmail"></span>
+    <span class="chip" id="whoRole"></span>
+    <button onclick="doSignOut()">ออกจากระบบ</button>
+  </div>
+</header>
+
+<!-- ===================== เข้าสู่ระบบ ===================== -->
+<div id="authView" class="narrow hidden">
+  <div class="card">
+    <div class="card-head"><h2>🔐 เข้าสู่ระบบเจ้าหน้าที่</h2></div>
+    <div class="card-body">
+      <div id="fileWarn" class="alert warn hidden">
+        <b>เปิดไฟล์จากเครื่องโดยตรง (file://) จะเข้าสู่ระบบไม่ได้</b><br>
+        กรุณาเปิดจากเว็บที่ตั้งค่า HTTPS ไว้ (ดู README.md)
+      </div>
+      <div id="authErr" class="alert err hidden"></div>
+
+      <button class="btn google" id="googleBtn" onclick="doGoogle()">
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+        เข้าสู่ระบบด้วย Google (Gmail / @psu.ac.th)
+      </button>
+
+      <details style="margin-top:16px">
+        <summary class="muted" style="cursor:pointer;font-size:13.5px">หรือเข้าสู่ระบบด้วยอีเมลและรหัสผ่าน</summary>
+        <div class="grid" style="margin-top:10px">
+          <label class="field">อีเมล
+            <input type="email" id="loginEmail" autocomplete="username">
+          </label>
+          <label class="field">รหัสผ่าน
+            <input type="password" id="loginPass" autocomplete="current-password">
+          </label>
+        </div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn" id="loginBtn" onclick="doSignIn()">เข้าสู่ระบบ</button>
+          <button class="btn ghost sm" onclick="doReset()">ลืมรหัสผ่าน</button>
+        </div>
+      </details>
+
+      <p class="muted" style="font-size:12.8px;margin-top:14px">
+        ระบบนี้เปิดให้เฉพาะเจ้าหน้าที่ที่ได้รับสิทธิ์จากผู้ดูแลระบบเท่านั้น — ไม่มีการสมัครสมาชิกเอง
+      </p>
+    </div>
+  </div>
+</div>
+
+<div id="loadingView" class="narrow">
+  <div class="card"><div class="card-body empty">⏳ กำลังเชื่อมต่อระบบ…</div></div>
+</div>
+
+<!-- ===================== ไม่มีสิทธิ์ ===================== -->
+<div id="denyView" class="narrow hidden">
+  <div class="card">
+    <div class="card-head"><h2>⛔ บัญชีนี้ยังไม่มีสิทธิ์เจ้าหน้าที่</h2></div>
+    <div class="card-body">
+      <p>เข้าสู่ระบบด้วย <b id="denyEmail"></b> สำเร็จแล้ว แต่บัญชีนี้ยังไม่อยู่ในรายชื่อเจ้าหน้าที่</p>
+      <p style="margin:10px 0 4px">รหัสผู้ใช้ (UID) ของบัญชีนี้:</p>
+      <p style="margin:0 0 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <code id="denyUid" style="background:#f3f5f8;padding:4px 8px;border-radius:6px;word-break:break-all"></code>
+        <button class="btn ghost sm" onclick="copyText($('denyUid').textContent, 'คัดลอก UID แล้ว')">📋 คัดลอก</button>
+      </p>
+      <div class="alert info">
+        <b>วิธีเพิ่มสิทธิ์ (ผู้ดูแลระบบ Firebase)</b>
+        <ol style="margin:4px 0 0 20px">
+          <li>เปิด Firebase Console → Realtime Database → <code>allowed</code></li>
+          <li>กด <b>＋</b> ที่ <code>allowed</code> → ช่อง Key วาง UID ข้างบน<br>
+              ช่อง Value พิมพ์ <code>"admin"</code> (แอดมิน จัดการทะเบียนครุภัณฑ์ได้) หรือ <code>true</code> (เจ้าหน้าที่ทั่วไป บันทึก PM/สอบเทียบ/ซ่อมได้) → Add</li>
+          <li>กลับมาหน้านี้แล้วกด <b>ลองอีกครั้ง</b></li>
+        </ol>
+      </div>
+      <div class="btn-row">
+        <button class="btn sm" onclick="location.reload()">🔄 ลองอีกครั้ง</button>
+        <button class="btn ghost sm" onclick="doSignOut()">ออกจากระบบ / ใช้บัญชีอื่น</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== แอป ===================== -->
+<div id="appView" class="hidden">
+  <nav class="tabs">
+    <button data-tab="list" class="active" onclick="currentEq ? closeEqDetail() : showTab('list')">🗄 ทะเบียนครุภัณฑ์</button>
+    <button data-tab="alerts" onclick="showTab('alerts')">🔔 การแจ้งเตือน<span class="badge zero" id="badgeAlert"></span></button>
+    <button data-tab="settings" onclick="showTab('settings')">⚙️ ตั้งค่าระบบ</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- ---------- ทะเบียนครุภัณฑ์: รายการ ---------- -->
+    <section id="page-list">
+      <div class="stats" id="stats"></div>
+      <div class="card">
+        <div class="card-body" style="padding-bottom:6px">
+          <div class="toolbar">
+            <input class="inp grow" id="fq" placeholder="🔍 ค้นหา รหัส · ชื่อ · ผู้รับผิดชอบ · ยี่ห้อ · S/N" oninput="filt.q=this.value;renderList()">
+            <select class="inp" id="fCat" onchange="filt.cat=this.value;renderList()">
+              <option value="">ทุกประเภท</option>
+              <option value="sci">เครื่องมือวิทยาศาสตร์</option>
+              <option value="durable">ครุภัณฑ์ทั่วไป</option>
+            </select>
+            <select class="inp" id="fStatus" onchange="filt.status=this.value;renderList()">
+              <option value="">ทุกสถานะ</option>
+              <option value="ok">ปกติ</option>
+              <option value="soon">ใกล้ครบกำหนด</option>
+              <option value="over">เกินกำหนด</option>
+              <option value="repair">อยู่ระหว่างซ่อม</option>
+              <option value="retired">เลิกใช้งาน</option>
+            </select>
+            <button class="btn ghost sm" onclick="exportCSV()">⬇️ ส่งออก CSV</button>
+            <span id="adminListBtns"></span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="list">
+            <thead><tr>
+              <th></th><th>รหัสครุภัณฑ์</th><th>ชื่อ / ประเภท</th><th>ผู้รับผิดชอบ</th>
+              <th>PM ครั้งถัดไป</th><th>สอบเทียบครั้งถัดไป</th><th>สถานะ</th>
+            </tr></thead>
+            <tbody id="listBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- ทะเบียนครุภัณฑ์: รายละเอียด ---------- -->
+    <section id="page-detail" class="hidden">
+      <div class="btn-row" style="margin-bottom:12px">
+        <button class="btn ghost sm" onclick="closeEqDetail()">← กลับไปทะเบียนครุภัณฑ์</button>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="detail-head" id="eqHead"></div>
+          <table class="kv" id="eqTable"></table>
+        </div>
+      </div>
+
+      <!-- PM -->
+      <div class="card">
+        <div class="card-head subcard-head">
+          <h2>🛠 การบำรุงรักษา (PM)</h2>
+          <div class="right"><button class="btn sm" onclick="toggleForm('pm')">➕ บันทึก PM ใหม่</button></div>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-2 hidden" id="form-pm">
+            <label class="field">วันที่ทำ PM <span class="req">*</span><input type="date" id="pm_doneDate"></label>
+            <label class="field">ครบกำหนดครั้งถัดไป <span class="req">*</span><input type="date" id="pm_nextDueDate"></label>
+            <label class="field">ผลการตรวจ
+              <select id="pm_result"><option value="ปกติ">ปกติ</option><option value="พบข้อบกพร่อง">พบข้อบกพร่อง</option></select>
+            </label>
+            <label class="field">ผู้บันทึก / ผู้ดำเนินการ <span class="req">*</span><input id="pm_doneBy"></label>
+            <label class="field span-all">รายละเอียดที่ทำ / รายการตรวจ<textarea id="pm_detail" placeholder="เช่น ทำความสะอาด ตรวจสอบความเที่ยงตรงเบื้องต้น เปลี่ยนอะไหล่สิ้นเปลือง"></textarea></label>
+            <div class="span-all btn-row">
+              <button class="btn sm" onclick="submitRecord('pm')">💾 บันทึก</button>
+              <button class="btn ghost sm" onclick="toggleForm('pm')">ยกเลิก</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="list">
+              <thead><tr><th>วันที่ทำ</th><th>รายละเอียด</th><th>ผลตรวจ</th><th>ครั้งถัดไป</th><th>ผู้บันทึก</th><th></th></tr></thead>
+              <tbody id="pmBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calibration -->
+      <div class="card">
+        <div class="card-head subcard-head">
+          <h2>📏 การสอบเทียบ (Calibration)</h2>
+          <div class="right"><button class="btn sm" onclick="toggleForm('cal')">➕ บันทึกการสอบเทียบใหม่</button></div>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-2 hidden" id="form-cal">
+            <label class="field">วันที่สอบเทียบ <span class="req">*</span><input type="date" id="cal_date"></label>
+            <label class="field">นัดสอบเทียบครั้งถัดไป <span class="req">*</span><input type="date" id="cal_nextDueDate"></label>
+            <label class="field">บริษัท / หน่วยงานที่สอบเทียบ <span class="req">*</span><input id="cal_agency"></label>
+            <label class="field">เลขที่ใบรับรอง<input id="cal_certNo"></label>
+            <label class="field">ผลการสอบเทียบ
+              <select id="cal_result"><option value="ผ่าน">ผ่าน</option><option value="ผ่านมีข้อสังเกต">ผ่านมีข้อสังเกต</option><option value="ไม่ผ่าน">ไม่ผ่าน</option></select>
+            </label>
+            <label class="field">ค่าใช้จ่าย (บาท)<input type="number" min="0" id="cal_cost"></label>
+            <label class="field">ผู้บันทึก / ผู้ประสานงาน <span class="req">*</span><input id="cal_doneBy"></label>
+            <label class="field span-all">หมายเหตุ<textarea id="cal_note"></textarea></label>
+            <div class="span-all btn-row">
+              <button class="btn sm" onclick="submitRecord('cal')">💾 บันทึก</button>
+              <button class="btn ghost sm" onclick="toggleForm('cal')">ยกเลิก</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="list">
+              <thead><tr><th>วันที่สอบเทียบ</th><th>บริษัท/หน่วยงาน</th><th>ผล</th><th>เลขที่ใบรับรอง</th><th>นัดครั้งถัดไป</th><th>ผู้บันทึก</th><th></th></tr></thead>
+              <tbody id="calBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repair -->
+      <div class="card">
+        <div class="card-head subcard-head">
+          <h2>🔧 การซ่อมแซม</h2>
+          <div class="right"><button class="btn sm" onclick="toggleForm('rep')">➕ บันทึกการซ่อมใหม่</button></div>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-2 hidden" id="form-rep">
+            <label class="field">วันที่พบว่าเสีย <span class="req">*</span><input type="date" id="rep_brokenDate"></label>
+            <label class="field">วันที่ซ่อมเสร็จ <small>เว้นว่างถ้ายังซ่อมไม่เสร็จ</small><input type="date" id="rep_repairDate"></label>
+            <label class="field span-all">อาการที่เสีย <span class="req">*</span><textarea id="rep_symptom"></textarea></label>
+            <label class="field">หน่วยงานที่ซ่อม <span class="req">*</span>
+              <select id="rep_unitType" onchange="$('rep_unitName').placeholder = this.value==='internal' ? 'เช่น ฝ่ายซ่อมบำรุง คณะ/ศูนย์' : 'ชื่อบริษัทภายนอก'">
+                <option value="internal">ภายในมหาวิทยาลัย</option>
+                <option value="external">ภายนอกมหาวิทยาลัย</option>
+              </select>
+            </label>
+            <label class="field">ชื่อหน่วยงาน/บริษัทที่ซ่อม <span class="req">*</span><input id="rep_unitName" placeholder="เช่น ฝ่ายซ่อมบำรุง คณะ/ศูนย์"></label>
+            <label class="field">ค่าใช้จ่าย (บาท)<input type="number" min="0" id="rep_cost"></label>
+            <label class="field">ผลการซ่อม<input id="rep_result" placeholder="เช่น ซ่อมสำเร็จ / รออะไหล่ / จำหน่ายออกจากระบบ"></label>
+            <label class="field">ผู้บันทึก <span class="req">*</span><input id="rep_doneBy"></label>
+            <label class="field span-all">หมายเหตุ<textarea id="rep_note"></textarea></label>
+            <div class="span-all btn-row">
+              <button class="btn sm" onclick="submitRecord('rep')">💾 บันทึก</button>
+              <button class="btn ghost sm" onclick="toggleForm('rep')">ยกเลิก</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="list">
+              <thead><tr><th>วันที่เสีย</th><th>อาการ</th><th>วันที่ซ่อมเสร็จ</th><th>หน่วยงานที่ซ่อม</th><th>ผล</th><th>ผู้บันทึก</th><th></th></tr></thead>
+              <tbody id="repBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- การแจ้งเตือน ---------- -->
+    <section id="page-alerts" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <h2>🔔 รายการที่ต้องติดตาม</h2>
+          <div class="hint">คำนวณจากวันครบกำหนดครั้งถัดไปที่บันทึกไว้ล่าสุดของแต่ละครุภัณฑ์</div>
+          <div class="right"><button class="btn ghost sm" onclick="askNotifyPermission()">🔔 เปิดแจ้งเตือนเดสก์ท็อป</button></div>
+        </div>
+        <div class="card-body" id="alertsBody"></div>
+      </div>
+    </section>
+
+    <!-- ---------- ตั้งค่าระบบ ---------- -->
+    <section id="page-settings" class="hidden">
+      <div class="card">
+        <div class="card-head"><h2>⚙️ ตั้งค่าการแจ้งเตือน</h2></div>
+        <div class="card-body">
+          <div id="settingsLock" class="alert info hidden">เฉพาะแอดมินเท่านั้นที่แก้ไขค่าตั้งได้ — บัญชีของท่านดูได้อย่างเดียว</div>
+          <div class="grid grid-2">
+            <label class="field">ชื่อหน่วยงาน<input id="set_orgName"></label>
+            <label class="field">แจ้งเตือน PM ล่วงหน้า (วัน)<input type="number" min="1" id="set_pmLeadDays"></label>
+            <label class="field">แจ้งเตือนสอบเทียบล่วงหน้า (วัน)<input type="number" min="1" id="set_calLeadDays"></label>
+            <label class="field">Mailer URL (Google Apps Script, ไม่บังคับ)<input id="set_mailUrl" placeholder="https://script.google.com/macros/s/.../exec"></label>
+            <label class="field">อีเมลรับสรุปแจ้งเตือน<input type="email" id="set_notifyEmail"></label>
+          </div>
+          <div class="btn-row" style="margin-top:14px">
+            <button class="btn sm" id="btnSaveSettings" onclick="saveSettings()">💾 บันทึกค่าตั้ง</button>
+            <button class="btn ghost sm" id="btnTestMail" onclick="testMailer()">📧 ทดสอบอีเมล</button>
+            <button class="btn ghost sm" id="btnDigestMail" onclick="sendDigestMail()">📧 ส่งสรุปแจ้งเตือนตอนนี้</button>
+          </div>
+          <div id="mailResult" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>👤 ชื่อของฉัน</h2><div class="hint">ใช้เติมช่อง "ผู้บันทึก" ให้อัตโนมัติในเครื่องนี้</div></div>
+        <div class="card-body">
+          <div class="grid grid-2">
+            <label class="field">ชื่อ-สกุลของฉัน<input id="set_myName" oninput="localStorage.setItem('lasc_maint_myname', this.value)"></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>🔑 สิทธิ์การใช้งาน</h2></div>
+        <div class="card-body">
+          <p class="muted" style="font-size:13.5px">
+            เพิ่ม/ถอนสิทธิ์เจ้าหน้าที่ทำผ่าน Firebase Console → Realtime Database → <code>allowed</code> โดยตรง (ดูวิธีใน README.md)<br>
+            <b>admin</b> = จัดการทะเบียนครุภัณฑ์ (เพิ่ม/แก้ไข/นำเข้า/เลิกใช้งาน) + บันทึก PM/สอบเทียบ/ซ่อมได้ทุกอย่าง<br>
+            <b>true</b> (เจ้าหน้าที่ทั่วไป) = บันทึก PM/สอบเทียบ/ซ่อม และแก้ไข/ยกเลิกเฉพาะรายการที่ตนเองบันทึกได้ ดูทะเบียนครุภัณฑ์ได้แต่แก้ไขไม่ได้
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ===================== ป๊อปอัป: เพิ่ม/แก้ไขครุภัณฑ์ ===================== -->
+<div class="modal-overlay hidden" id="eqModal">
+  <div class="modal-box">
+    <div class="card-head"><h2 id="eqModalTitle">➕ เพิ่มครุภัณฑ์ใหม่</h2>
+      <div class="right"><button class="btn ghost sm" onclick="closeEqModal()">✕</button></div>
+    </div>
+    <div class="card-body">
+      <div id="eqModalErr" class="alert err hidden"></div>
+      <div class="grid grid-2">
+        <label class="field">รหัสครุภัณฑ์ / เลขครุภัณฑ์ <span class="req">*</span><input id="eq_code"></label>
+        <label class="field">ชื่อครุภัณฑ์ / เครื่องมือ <span class="req">*</span><input id="eq_name"></label>
+        <label class="field">ประเภท <span class="req">*</span>
+          <select id="eq_category"><option value="sci">เครื่องมือวิทยาศาสตร์</option><option value="durable">ครุภัณฑ์ทั่วไป</option></select>
+        </label>
+        <label class="field">ผู้รับผิดชอบ <span class="req">*</span><input id="eq_responsible" list="responsibleList"></label>
+        <datalist id="responsibleList"></datalist>
+        <label class="field">อีเมลผู้รับผิดชอบ <small>ใช้แจ้งเตือนอัตโนมัติ (PM/สอบเทียบ/แจ้งชำรุดจากระบบจอง)</small><input type="email" id="eq_responsibleEmail"></label>
+        <label class="field">หน่วยงาน/ฝ่ายที่รับผิดชอบ<input id="eq_responsibleUnit"></label>
+        <label class="field">สถานที่ตั้ง/ห้อง<input id="eq_location"></label>
+        <label class="field">ยี่ห้อ<input id="eq_brand"></label>
+        <label class="field">รุ่น<input id="eq_model"></label>
+        <label class="field">เลขซีเรียล (S/N)<input id="eq_serial"></label>
+        <label class="field">วันที่จัดซื้อ<input type="date" id="eq_purchaseDate"></label>
+        <label class="field">ราคา (บาท)<input type="number" min="0" id="eq_price"></label>
+        <label class="field">แหล่งงบประมาณ<input id="eq_fundSource"></label>
+        <label class="field">รอบ PM มาตรฐาน (วัน)<input type="number" min="1" id="eq_pmCycleDays" placeholder="ไม่บังคับ"></label>
+        <label class="field">รอบสอบเทียบมาตรฐาน (วัน)<input type="number" min="1" id="eq_calCycleDays" placeholder="ไม่บังคับ"></label>
+        <label class="field span-all">หมายเหตุ<textarea id="eq_note"></textarea></label>
+        <div class="span-all">
+          <label class="field">รูปประกอบ</label>
+          <div class="file-drop">
+            <img id="eq_photoPreview" class="thumb hidden" style="width:64px;height:64px">
+            <input type="file" id="eq_photoInput" accept="image/*" onchange="pickPhoto(event)">
+            <button type="button" class="btn ghost sm" id="eq_photoRemove" onclick="removePhoto()">ลบรูป</button>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn" onclick="submitEquipment()">💾 บันทึก</button>
+        <button class="btn ghost" onclick="closeEqModal()">ยกเลิก</button>
+        <button class="btn danger" id="eq_retireBtn" onclick="toggleRetire()" style="margin-left:auto">เลิกใช้งานครุภัณฑ์นี้</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ป๊อปอัป: นำเข้าจาก Excel ===================== -->
+<div class="modal-overlay hidden" id="importModal">
+  <div class="modal-box wide">
+    <div class="card-head"><h2>📥 นำเข้าทะเบียนครุภัณฑ์จาก Excel</h2>
+      <div class="right"><button class="btn ghost sm" onclick="closeImportModal()">✕</button></div>
+    </div>
+    <div class="card-body">
+      <div class="import-help">
+        คัดลอกข้อมูลจาก Excel (เลือกหลายคอลัมน์แล้ว Ctrl+C) แล้ววางในช่องด้านล่าง เรียงคอลัมน์ตามนี้:<br>
+        <b>รหัสครุภัณฑ์ · ชื่อ · ประเภท(เครื่องมือ/ครุภัณฑ์) · ผู้รับผิดชอบ · หน่วยงาน · สถานที่ตั้ง · ยี่ห้อ · รุ่น · S/N · วันที่จัดซื้อ(YYYY-MM-DD) · ราคา · แหล่งงบประมาณ · รอบPM(วัน) · รอบสอบเทียบ(วัน) · หมายเหตุ · อีเมลผู้รับผิดชอบ</b><br>
+        ต้องมีอย่างน้อย รหัส และ ชื่อ ในแต่ละแถว — คอลัมน์ที่เหลือเว้นว่างได้ (คอลัมน์อีเมลผู้รับผิดชอบเป็นคอลัมน์สุดท้าย ไม่บังคับ)
+      </div>
+      <label class="check" style="margin:10px 0">
+        <input type="checkbox" id="imp_hasHeader" checked> แถวแรกเป็นหัวตาราง (ข้ามแถวแรก)
+      </label>
+      <textarea id="imp_text" style="min-height:120px" placeholder="วางข้อมูลจาก Excel ที่นี่..."></textarea>
+      <div class="btn-row" style="margin:10px 0"><button class="btn sm" onclick="parseImport()">🔍 ตรวจตัวอย่าง</button></div>
+      <div id="importPreview"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer class="pg">ระบบดูแลครุภัณฑ์และเครื่องมือวิทยาศาสตร์ · ศูนย์บริการสัตว์ทดลอง มหาวิทยาลัยสงขลานครินทร์</footer>
+
+<script>window.FIREBASE_CONFIG = null;</script>
+<script>
+/* ▼▼▼ วางค่า config จาก Firebase Console ทับก้อนนี้ ▼▼▼ */
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBH6J-u9UPxaAgLJ4ciAEaq2hyFRFrPH6A",
+  authDomain: "psu-lasc-maintenance.firebaseapp.com",
+  databaseURL: "https://psu-lasc-maintenance-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "psu-lasc-maintenance",
+  storageBucket: "psu-lasc-maintenance.firebasestorage.app",
+  messagingSenderId: "548423705073",
+  appId: "1:548423705073:web:47381640ada5405a97a450"
+};
+/* ▲▲▲ จบส่วนที่ต้องแก้ ▲▲▲ */
+</script>
+
+<script>
+const ROOT = 'data/asset';
+let fb = null, me = null, myRole = null;
+let EQ = {}, PM = {}, CAL = {}, REP = {}, SET = {}, INF = {};
+let unsubs = [];
+let currentEq = null;
+let editingEqId = null;
+let _pendingPhoto = undefined; // undefined = ไม่แก้รูป, null = ลบรูป, string = รูปใหม่
+let _importRows = [];
+let filt = { q: '', cat: '', status: '' };
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+function copyText(t, okMsg) {
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(() => toast(okMsg), () => prompt('คัดลอก:', t));
+  else prompt('คัดลอก:', t);
+}
+function todayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function daysDiff(fromISO, toISO) {
+  const a = new Date(fromISO + 'T00:00:00'), b = new Date(toISO + 'T00:00:00');
+  return Math.round((b - a) / 86400000);
+}
+const TH_MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function thaiDate(iso) {
+  if (!iso) return '-';
+  const p = String(iso).slice(0,10).split('-'); if (p.length !== 3) return esc(iso);
+  return Number(p[2]) + ' ' + TH_MONTHS[Number(p[1])-1] + ' ' + (Number(p[0]) + 543);
+}
+function readLocal(k, def) { try { return localStorage.getItem(k) || def; } catch (e) { return def; } }
+function newId() { return fb.push(fb.ref(fb.db, ROOT + '/equipment')).key; }
+
+/* ---------- เข้าสู่ระบบ ---------- */
+function showView(id) {
+  ['authView', 'loadingView', 'denyView', 'appView'].forEach(v => $(v).classList.toggle('hidden', v !== id));
+  $('whoBox').classList.toggle('hidden', !(id === 'appView' || id === 'denyView'));
+}
+async function doSignIn() {
+  const email = $('loginEmail').value.trim(), pass = $('loginPass').value;
+  const box = $('authErr'); box.classList.add('hidden');
+  if (!fb) { box.textContent = 'ยังเชื่อมต่อระบบไม่สำเร็จ — รีเฟรชหน้าเว็บ'; box.classList.remove('hidden'); return; }
+  if (!email || !pass) { box.textContent = 'กรอกอีเมลและรหัสผ่าน'; box.classList.remove('hidden'); return; }
+  $('loginBtn').disabled = true;
+  try { await fb.signIn(fb.auth, email, pass); }
+  catch (e) {
+    const code = String(e && e.code || '');
+    box.textContent = /invalid-credential|wrong-password|user-not-found|invalid-email/.test(code) ? 'อีเมลหรือรหัสผ่านไม่ถูกต้อง (ถ้าใช้ Gmail ให้กดปุ่ม “เข้าสู่ระบบด้วย Google” แทน)'
+                    : /too-many-requests/.test(code) ? 'พยายามเข้าสู่ระบบหลายครั้งเกินไป กรุณารอสักครู่'
+                    : authMessage(e);
+    box.classList.remove('hidden');
+  }
+  $('loginBtn').disabled = false;
+}
+function authMessage(e) {
+  const code = String(e && e.code || '');
+  if (/operation-not-supported-in-this-environment|web-storage-unsupported/.test(code) || location.protocol === 'file:')
+    return 'เปิดไฟล์จากเครื่องโดยตรงเข้าสู่ระบบไม่ได้ — ต้องเปิดจากเว็บ HTTPS';
+  if (/unauthorized-domain/.test(code))
+    return 'โดเมน ' + location.hostname + ' ยังไม่ได้รับอนุญาต — เพิ่มใน Firebase Console → Authentication → Settings → Authorized domains';
+  if (/operation-not-allowed/.test(code)) return 'ยังไม่ได้เปิดการเข้าสู่ระบบด้วย Google ใน Firebase Console → Authentication → Sign-in method';
+  if (/account-exists-with-different-credential/.test(code)) return 'อีเมลนี้เคยสมัครด้วยวิธีอื่น — ลองเข้าสู่ระบบด้วยอีเมลและรหัสผ่านเดิม';
+  if (/network-request-failed/.test(code)) return 'เชื่อมต่ออินเทอร์เน็ตไม่ได้ ลองใหม่อีกครั้ง';
+  return 'เข้าสู่ระบบไม่สำเร็จ: ' + (e && (e.message || code));
+}
+async function doGoogle() {
+  const box = $('authErr'); box.classList.add('hidden');
+  if (!fb) { box.textContent = 'ยังเชื่อมต่อระบบไม่สำเร็จ — รีเฟรชหน้าเว็บ'; box.classList.remove('hidden'); return; }
+  if (location.protocol === 'file:') { box.textContent = authMessage({}); box.classList.remove('hidden'); return; }
+  const provider = new fb.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  $('googleBtn').disabled = true;
+  try { await fb.signInWithPopup(fb.auth, provider); }
+  catch (e) {
+    const code = String(e && e.code || '');
+    if (/popup-blocked|cancelled-popup-request/.test(code)) {
+      try { await fb.signInWithRedirect(fb.auth, provider); return; } catch (e2) { e = e2; }
+    }
+    if (!/popup-closed-by-user|cancelled-popup-request/.test(code)) { box.textContent = authMessage(e); box.classList.remove('hidden'); }
+  }
+  $('googleBtn').disabled = false;
+}
+async function doReset() {
+  const email = $('loginEmail').value.trim();
+  if (!email) { toast('กรอกอีเมลก่อน แล้วกด “ลืมรหัสผ่าน”'); return; }
+  try { await fb.resetPassword(fb.auth, email); toast('ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่ ' + email + ' แล้ว'); }
+  catch (e) { toast('ส่งลิงก์ไม่สำเร็จ: ' + (e.code || e.message)); }
+}
+function doSignOut() { if (fb) fb.signOut(fb.auth); }
+
+function detach() { unsubs.forEach(u => { try { u(); } catch (e) {} }); unsubs = []; }
+function attach() {
+  detach();
+  unsubs.push(fb.onValue(fb.ref(fb.db, ROOT + '/equipment'), (s) => { EQ = s.exists() ? s.val() : {}; Object.keys(EQ).forEach(k => EQ[k].id = k); renderAll(); }, () => {}));
+  unsubs.push(fb.onValue(fb.ref(fb.db, ROOT + '/pm'), (s) => { PM = s.exists() ? s.val() : {}; renderAll(); }, () => {}));
+  unsubs.push(fb.onValue(fb.ref(fb.db, ROOT + '/calibration'), (s) => { CAL = s.exists() ? s.val() : {}; renderAll(); }, () => {}));
+  unsubs.push(fb.onValue(fb.ref(fb.db, ROOT + '/repair'), (s) => { REP = s.exists() ? s.val() : {}; renderAll(); }, () => {}));
+  unsubs.push(fb.onValue(fb.ref(fb.db, ROOT + '/incomingFaults'), (s) => { INF = s.exists() ? s.val() : {}; renderAll(); }, () => {}));
+  unsubs.push(fb.onValue(fb.ref(fb.db, ROOT + '/settings'), (s) => {
+    SET = Object.assign({ pmLeadDays: 14, calLeadDays: 30, orgName: 'ศูนย์บริการสัตว์ทดลอง มหาวิทยาลัยสงขลานครินทร์' }, s.exists() ? s.val() : {});
+    fillSettingsForm(); renderAll();
+  }, () => {}));
+}
+function renderAll() {
+  renderList();
+  if (currentEq) renderEqDetail();
+  renderAlerts();
+}
+
+/* ---------- แท็บ ---------- */
+function showTab(name) {
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  $('page-list').classList.toggle('hidden', name !== 'list' || !!currentEq);
+  $('page-detail').classList.toggle('hidden', name !== 'list' || !currentEq);
+  $('page-alerts').classList.toggle('hidden', name !== 'alerts');
+  $('page-settings').classList.toggle('hidden', name !== 'settings');
+  window.scrollTo(0, 0);
+}
+
+/* ---------- คำนวณสถานะ / กำหนดครั้งถัดไป ---------- */
+function activeList(map) { return Object.keys(map || {}).map(k => Object.assign({ id: k }, map[k])).filter(r => !r.void); }
+function eqPmList(eqId) { return activeList((PM || {})[eqId]).sort((a,b) => String(b.doneDate||'').localeCompare(String(a.doneDate||''))); }
+function eqCalList(eqId) { return activeList((CAL || {})[eqId]).sort((a,b) => String(b.date||'').localeCompare(String(a.date||''))); }
+function eqRepList(eqId) { return activeList((REP || {})[eqId]).sort((a,b) => String(b.brokenDate||'').localeCompare(String(a.brokenDate||''))); }
+function nextPmDue(eqId) { const l = eqPmList(eqId); return l[0] ? l[0].nextDueDate || null : null; }
+function nextCalDue(eqId) { const l = eqCalList(eqId); return l[0] ? l[0].nextDueDate || null : null; }
+function openRepair(eqId) { const l = eqRepList(eqId); return l[0] && !l[0].repairDate ? l[0] : null; }
+
+function eqStatus(eq) {
+  if (eq.retired) return { key: 'retired', label: 'เลิกใช้งาน', cls: 'est-off' };
+  if (openRepair(eq.id)) return { key: 'repair', label: 'อยู่ระหว่างซ่อม', cls: 'est-fix' };
+  const today = todayISO();
+  const pmDue = nextPmDue(eq.id), calDue = nextCalDue(eq.id);
+  const leadPm = Number(SET.pmLeadDays || 14), leadCal = Number(SET.calLeadDays || 30);
+  let over = (pmDue && pmDue < today) || (calDue && calDue < today);
+  let soon = !over && ((pmDue && daysDiff(today, pmDue) <= leadPm) || (calDue && daysDiff(today, calDue) <= leadCal));
+  if (over) return { key: 'over', label: 'เกินกำหนด', cls: 'est-over' };
+  if (soon) return { key: 'soon', label: 'ใกล้ครบกำหนด', cls: 'est-soon' };
+  return { key: 'ok', label: 'ปกติ', cls: 'est-ok' };
+}
+function catLabel(c) { return c === 'durable' ? 'ครุภัณฑ์ทั่วไป' : 'เครื่องมือวิทยาศาสตร์'; }
+
+/* ---------- รายการครุภัณฑ์ ---------- */
+function allEq() { return Object.values(EQ || {}); }
+function renderList() {
+  const all = allEq();
+  const count = { ok:0, soon:0, over:0, repair:0, retired:0 };
+  all.forEach(eq => count[eqStatus(eq).key]++);
+  const statCard = (key, label, color) =>
+    '<div class="stat' + (filt.status === key ? ' sel' : '') + '" style="--c:' + color + '" onclick="filt.status=\'' + key + '\';renderList()">' +
+    '<div class="n">' + (key ? count[key] : all.length) + '</div><div class="t">' + label + '</div></div>';
+  $('stats').innerHTML = statCard('', 'ครุภัณฑ์ทั้งหมด', '#143f66') +
+    statCard('soon', 'ใกล้ครบกำหนด', '#b9770e') + statCard('over', 'เกินกำหนด', '#c0392b') +
+    statCard('repair', 'อยู่ระหว่างซ่อม', '#6a3fa0') + statCard('retired', 'เลิกใช้งาน', '#5d6a73');
+
+  $('adminListBtns').innerHTML = myRole === 'admin'
+    ? '<button class="btn sm" onclick="openEqModal()">➕ เพิ่มครุภัณฑ์</button><button class="btn ghost sm" onclick="openImportModal()">📥 นำเข้าจาก Excel</button>'
+    : '';
+
+  const q = filt.q.trim().toLowerCase();
+  const rows = all.filter(eq => (!filt.cat || eq.category === filt.cat) &&
+    (!filt.status || eqStatus(eq).key === filt.status) &&
+    (!q || [eq.code, eq.name, eq.responsible, eq.brand, eq.model, eq.serial].join(' ').toLowerCase().includes(q)));
+  rows.sort((a,b) => String(a.code||'').localeCompare(String(b.code||''), 'th'));
+
+  if (!rows.length) {
+    $('listBody').innerHTML = '<tr><td colspan="7" class="empty">' + (all.length ? 'ไม่พบครุภัณฑ์ตามเงื่อนไขที่เลือก' : 'ยังไม่มีครุภัณฑ์ในทะเบียน' + (myRole === 'admin' ? ' — กด “เพิ่มครุภัณฑ์” เพื่อเริ่มต้น' : '')) + '</td></tr>';
+    return;
+  }
+  $('listBody').innerHTML = rows.map(eq => {
+    const st = eqStatus(eq);
+    const pmDue = nextPmDue(eq.id), calDue = nextCalDue(eq.id);
+    return '<tr onclick="openEq(\'' + eq.id + '\')">' +
+      '<td>' + (eq.photo ? '<img class="thumb" src="' + eq.photo + '">' : '<div class="thumb-ph">📦</div>') + '</td>' +
+      '<td class="code">' + esc(eq.code) + '</td>' +
+      '<td><b>' + esc(eq.name) + '</b><div class="muted" style="font-size:12.5px">' + esc(catLabel(eq.category)) + '</div></td>' +
+      '<td>' + esc(eq.responsible || '-') + '</td>' +
+      '<td>' + (pmDue ? esc(thaiDate(pmDue)) : '<span class="muted">-</span>') + '</td>' +
+      '<td>' + (calDue ? esc(thaiDate(calDue)) : '<span class="muted">-</span>') + '</td>' +
+      '<td><span class="est ' + st.cls + '">' + st.label + '</span></td>' +
+      '</tr>';
+  }).join('');
+}
+
+/* ---------- รายละเอียดครุภัณฑ์ ---------- */
+function openEq(id) { if (!EQ[id]) { toast('ไม่พบครุภัณฑ์'); return; } currentEq = id; showTab('list'); renderEqDetail(); resetForms(); }
+function closeEqDetail() { currentEq = null; showTab('list'); renderList(); }
+function renderEqDetail() {
+  const eq = EQ[currentEq]; if (!eq) { closeEqDetail(); return; }
+  const st = eqStatus(eq);
+  $('eqHead').innerHTML =
+    (eq.photo ? '<img class="photo-big" src="' + eq.photo + '">' : '<div class="photo-big-ph">📦</div>') +
+    '<div class="info">' +
+      '<div class="code">' + esc(eq.code) + '</div>' +
+      '<h2>' + esc(eq.name) + '</h2>' +
+      '<div class="badges"><span class="cat-pill">' + esc(catLabel(eq.category)) + '</span><span class="est ' + st.cls + '">' + st.label + '</span></div>' +
+      '<div class="muted" style="font-size:13.5px">ผู้รับผิดชอบ: <b>' + esc(eq.responsible || '-') + '</b>' + (eq.responsibleUnit ? ' (' + esc(eq.responsibleUnit) + ')' : '') + (eq.responsibleEmail ? ' · ' + esc(eq.responsibleEmail) : '') + '</div>' +
+    '</div>' +
+    '<div class="actions">' + (myRole === 'admin' ? '<button class="btn ghost sm" onclick="openEqModal(\'' + eq.id + '\')">✏️ แก้ไขข้อมูลครุภัณฑ์</button>' : '') + '</div>';
+
+  const rows = [
+    ['สถานที่ตั้ง/ห้อง', esc(eq.location || '-')],
+    ['ยี่ห้อ / รุ่น / S/N', [eq.brand, eq.model, eq.serial].filter(Boolean).map(esc).join(' / ') || '-'],
+    ['วันที่จัดซื้อ', eq.purchaseDate ? esc(thaiDate(eq.purchaseDate)) : '-'],
+    ['ราคา', eq.price ? Number(eq.price).toLocaleString() + ' บาท' : '-'],
+    ['แหล่งงบประมาณ', esc(eq.fundSource || '-')],
+    ['รอบ PM / รอบสอบเทียบมาตรฐาน', (eq.pmCycleDays ? eq.pmCycleDays + ' วัน' : '-') + ' / ' + (eq.calCycleDays ? eq.calCycleDays + ' วัน' : '-')],
+    ['หมายเหตุ', eq.note ? esc(eq.note).replace(/\n/g,'<br>') : '-']
+  ];
+  $('eqTable').innerHTML = rows.map(r => '<tr><th>' + r[0] + '</th><td>' + r[1] + '</td></tr>').join('');
+
+  renderPmTable(); renderCalTable(); renderRepTable();
+  prefillDoneBy();
+}
+function prefillDoneBy() {
+  const name = readLocal('lasc_maint_myname', me ? (me.email || '') : '');
+  ['pm_doneBy','cal_doneBy','rep_doneBy'].forEach(id => { if ($(id) && !$(id).value) $(id).value = name; });
+}
+
+function voidBtn(kind, id, rec) {
+  const canVoid = myRole === 'admin' || rec.createdBy === (me && me.uid);
+  if (!canVoid) return '';
+  return '<button class="btn ghost sm" onclick="voidRecord(\'' + kind + '\',\'' + id + '\')">ยกเลิกรายการ</button>';
+}
+function renderPmTable() {
+  const list = Object.keys((PM||{})[currentEq] || {}).map(k => Object.assign({ id: k }, PM[currentEq][k]))
+    .sort((a,b) => String(b.doneDate||'').localeCompare(String(a.doneDate||'')));
+  if (!list.length) { $('pmBody').innerHTML = '<tr><td colspan="6" class="empty">ยังไม่มีประวัติ PM</td></tr>'; return; }
+  $('pmBody').innerHTML = list.map(r => (r.void ? '<tr class="void-row">' : '<tr>') +
+    '<td>' + esc(thaiDate(r.doneDate)) + '</td>' +
+    '<td>' + esc(r.detail || '-') + (r.void ? '<span class="void-note">ยกเลิก: ' + esc(r.voidReason||'') + '</span>' : '') + '</td>' +
+    '<td>' + esc(r.result || '-') + '</td>' +
+    '<td>' + esc(thaiDate(r.nextDueDate)) + '</td>' +
+    '<td>' + esc(r.doneBy || '-') + '</td>' +
+    '<td>' + (r.void ? '' : voidBtn('pm', r.id, r)) + '</td></tr>').join('');
+}
+function renderCalTable() {
+  const list = Object.keys((CAL||{})[currentEq] || {}).map(k => Object.assign({ id: k }, CAL[currentEq][k]))
+    .sort((a,b) => String(b.date||'').localeCompare(String(a.date||'')));
+  if (!list.length) { $('calBody').innerHTML = '<tr><td colspan="7" class="empty">ยังไม่มีประวัติการสอบเทียบ</td></tr>'; return; }
+  $('calBody').innerHTML = list.map(r => (r.void ? '<tr class="void-row">' : '<tr>') +
+    '<td>' + esc(thaiDate(r.date)) + '</td>' +
+    '<td>' + esc(r.agency || '-') + (r.void ? '<span class="void-note">ยกเลิก: ' + esc(r.voidReason||'') + '</span>' : '') + '</td>' +
+    '<td>' + esc(r.result || '-') + '</td>' +
+    '<td>' + esc(r.certNo || '-') + '</td>' +
+    '<td>' + esc(thaiDate(r.nextDueDate)) + '</td>' +
+    '<td>' + esc(r.doneBy || '-') + '</td>' +
+    '<td>' + (r.void ? '' : voidBtn('cal', r.id, r)) + '</td></tr>').join('');
+}
+function renderRepTable() {
+  const list = Object.keys((REP||{})[currentEq] || {}).map(k => Object.assign({ id: k }, REP[currentEq][k]))
+    .sort((a,b) => String(b.brokenDate||'').localeCompare(String(a.brokenDate||'')));
+  if (!list.length) { $('repBody').innerHTML = '<tr><td colspan="7" class="empty">ยังไม่มีประวัติการซ่อม</td></tr>'; return; }
+  $('repBody').innerHTML = list.map(r => (r.void ? '<tr class="void-row">' : '<tr>') +
+    '<td>' + esc(thaiDate(r.brokenDate)) + '</td>' +
+    '<td>' + esc(r.symptom || '-') + (r.void ? '<span class="void-note">ยกเลิก: ' + esc(r.voidReason||'') + '</span>' : '') + '</td>' +
+    '<td>' + (r.repairDate ? esc(thaiDate(r.repairDate)) : '<span class="muted">ยังไม่เสร็จ</span>') + '</td>' +
+    '<td>' + esc(r.unitName || '-') + '<div class="muted" style="font-size:12px">' + (r.unitType === 'external' ? 'ภายนอกมหาวิทยาลัย' : 'ภายในมหาวิทยาลัย') + '</div></td>' +
+    '<td>' + esc(r.result || '-') + '</td>' +
+    '<td>' + esc(r.doneBy || '-') + '</td>' +
+    '<td>' + (r.void ? '' : voidBtn('rep', r.id, r)) + '</td></tr>').join('');
+}
+
+function resetForms() {
+  ['pm','cal','rep'].forEach(k => $('form-' + k).classList.add('hidden'));
+  $('pm_doneDate').value = todayISO(); $('pm_nextDueDate').value = ''; $('pm_result').value = 'ปกติ'; $('pm_detail').value = ''; $('pm_doneBy').value = '';
+  $('cal_date').value = todayISO(); $('cal_nextDueDate').value = ''; $('cal_agency').value = ''; $('cal_certNo').value = ''; $('cal_result').value = 'ผ่าน'; $('cal_cost').value = ''; $('cal_doneBy').value = ''; $('cal_note').value = '';
+  $('rep_brokenDate').value = todayISO(); $('rep_repairDate').value = ''; $('rep_symptom').value = ''; $('rep_unitType').value = 'internal'; $('rep_unitName').value = ''; $('rep_cost').value = ''; $('rep_result').value = ''; $('rep_doneBy').value = ''; $('rep_note').value = '';
+}
+function toggleForm(kind) { $('form-' + kind).classList.toggle('hidden'); }
+
+async function submitRecord(kind) {
+  const eqId = currentEq; if (!eqId) return;
+  let path, data;
+  if (kind === 'pm') {
+    const doneDate = $('pm_doneDate').value, nextDueDate = $('pm_nextDueDate').value, doneBy = $('pm_doneBy').value.trim();
+    if (!doneDate || !nextDueDate || !doneBy) { toast('กรอกวันที่ทำ PM, ครบกำหนดครั้งถัดไป และผู้บันทึกให้ครบ'); return; }
+    path = 'pm/' + eqId; data = { doneDate, nextDueDate, doneBy, result: $('pm_result').value, detail: $('pm_detail').value.trim() };
+  } else if (kind === 'cal') {
+    const date = $('cal_date').value, nextDueDate = $('cal_nextDueDate').value, agency = $('cal_agency').value.trim(), doneBy = $('cal_doneBy').value.trim();
+    if (!date || !nextDueDate || !agency || !doneBy) { toast('กรอกวันที่สอบเทียบ นัดครั้งถัดไป บริษัท/หน่วยงาน และผู้บันทึกให้ครบ'); return; }
+    path = 'calibration/' + eqId; data = { date, nextDueDate, agency, certNo: $('cal_certNo').value.trim(), result: $('cal_result').value, cost: $('cal_cost').value ? Number($('cal_cost').value) : null, doneBy, note: $('cal_note').value.trim() };
+  } else {
+    const brokenDate = $('rep_brokenDate').value, symptom = $('rep_symptom').value.trim(), unitName = $('rep_unitName').value.trim(), doneBy = $('rep_doneBy').value.trim();
+    if (!brokenDate || !symptom || !unitName || !doneBy) { toast('กรอกวันที่เสีย อาการ หน่วยงานที่ซ่อม และผู้บันทึกให้ครบ'); return; }
+    path = 'repair/' + eqId; data = { brokenDate, repairDate: $('rep_repairDate').value || null, symptom, unitType: $('rep_unitType').value, unitName, cost: $('rep_cost').value ? Number($('rep_cost').value) : null, result: $('rep_result').value.trim(), doneBy, note: $('rep_note').value.trim() };
+  }
+  data.createdAt = Date.now(); data.createdBy = me.uid;
+  const id = fb.push(fb.ref(fb.db, ROOT + '/' + path)).key;
+  try {
+    await fb.set(fb.ref(fb.db, ROOT + '/' + path + '/' + id), data);
+    localStorage.setItem('lasc_maint_myname', data.doneBy);
+    toggleForm(kind); resetForms(); prefillDoneBy();
+    toast('บันทึกแล้ว');
+  } catch (e) { toast('บันทึกไม่สำเร็จ: ' + (e.message || e)); }
+}
+
+async function voidRecord(kind, id) {
+  const reason = prompt('เหตุผลที่ยกเลิกรายการนี้:'); if (reason === null) return;
+  if (!reason.trim()) { toast('ต้องระบุเหตุผล'); return; }
+  const path = { pm: 'pm', cal: 'calibration', rep: 'repair' }[kind] + '/' + currentEq + '/' + id;
+  try {
+    await fb.update(fb.ref(fb.db, ROOT + '/' + path), { void: true, voidReason: reason.trim(), voidAt: Date.now(), voidBy: me.uid });
+    toast('ยกเลิกรายการแล้ว');
+  } catch (e) { toast('ยกเลิกไม่สำเร็จ: ' + (e.message || e)); }
+}
+
+/* ---------- เพิ่ม/แก้ไขครุภัณฑ์ (แอดมิน) ---------- */
+function fillResponsibleList() {
+  const names = Array.from(new Set(allEq().map(e => e.responsible).filter(Boolean)));
+  $('responsibleList').innerHTML = names.map(n => '<option value="' + esc(n) + '">').join('');
+}
+function openEqModal(id) {
+  editingEqId = id || null; _pendingPhoto = undefined;
+  fillResponsibleList();
+  $('eqModalErr').classList.add('hidden');
+  $('eq_photoInput').value = '';
+  const eq = id ? EQ[id] : null;
+  $('eqModalTitle').textContent = id ? '✏️ แก้ไขครุภัณฑ์' : '➕ เพิ่มครุภัณฑ์ใหม่';
+  $('eq_code').value = eq ? eq.code || '' : '';
+  $('eq_name').value = eq ? eq.name || '' : '';
+  $('eq_category').value = eq ? eq.category || 'sci' : 'sci';
+  $('eq_responsible').value = eq ? eq.responsible || '' : '';
+  $('eq_responsibleEmail').value = eq ? eq.responsibleEmail || '' : '';
+  $('eq_responsibleUnit').value = eq ? eq.responsibleUnit || '' : '';
+  $('eq_location').value = eq ? eq.location || '' : '';
+  $('eq_brand').value = eq ? eq.brand || '' : '';
+  $('eq_model').value = eq ? eq.model || '' : '';
+  $('eq_serial').value = eq ? eq.serial || '' : '';
+  $('eq_purchaseDate').value = eq ? eq.purchaseDate || '' : '';
+  $('eq_price').value = eq ? eq.price || '' : '';
+  $('eq_fundSource').value = eq ? eq.fundSource || '' : '';
+  $('eq_pmCycleDays').value = eq ? eq.pmCycleDays || '' : '';
+  $('eq_calCycleDays').value = eq ? eq.calCycleDays || '' : '';
+  $('eq_note').value = eq ? eq.note || '' : '';
+  if (eq && eq.photo) { $('eq_photoPreview').src = eq.photo; $('eq_photoPreview').classList.remove('hidden'); }
+  else { $('eq_photoPreview').classList.add('hidden'); }
+  $('eq_retireBtn').classList.toggle('hidden', !id);
+  $('eq_retireBtn').textContent = eq && eq.retired ? 'เรียกกลับมาใช้งาน' : 'เลิกใช้งานครุภัณฑ์นี้';
+  $('eqModal').classList.remove('hidden');
+}
+function closeEqModal() { $('eqModal').classList.add('hidden'); editingEqId = null; }
+function pickPhoto(ev) {
+  const file = ev.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const maxW = 900, scale = Math.min(1, maxW / img.width);
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      _pendingPhoto = cv.toDataURL('image/jpeg', 0.72);
+      $('eq_photoPreview').src = _pendingPhoto; $('eq_photoPreview').classList.remove('hidden');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function removePhoto() { _pendingPhoto = null; $('eq_photoPreview').classList.add('hidden'); $('eq_photoInput').value = ''; }
+async function submitEquipment() {
+  const code = $('eq_code').value.trim(), name = $('eq_name').value.trim(), responsible = $('eq_responsible').value.trim();
+  if (!code || !name || !responsible) { $('eqModalErr').textContent = 'กรอกรหัสครุภัณฑ์ ชื่อ และผู้รับผิดชอบให้ครบ'; $('eqModalErr').classList.remove('hidden'); return; }
+  const dup = allEq().some(e => e.code === code && e.id !== editingEqId);
+  if (dup && !confirm('มีรหัสครุภัณฑ์ "' + code + '" อยู่แล้วในทะเบียน ต้องการบันทึกซ้ำหรือไม่?')) return;
+  const data = {
+    code, name, category: $('eq_category').value, responsible,
+    responsibleEmail: $('eq_responsibleEmail').value.trim(),
+    responsibleUnit: $('eq_responsibleUnit').value.trim(), location: $('eq_location').value.trim(),
+    brand: $('eq_brand').value.trim(), model: $('eq_model').value.trim(), serial: $('eq_serial').value.trim(),
+    purchaseDate: $('eq_purchaseDate').value || null, price: $('eq_price').value ? Number($('eq_price').value) : null,
+    fundSource: $('eq_fundSource').value.trim(), pmCycleDays: $('eq_pmCycleDays').value ? Number($('eq_pmCycleDays').value) : null,
+    calCycleDays: $('eq_calCycleDays').value ? Number($('eq_calCycleDays').value) : null, note: $('eq_note').value.trim(),
+    updatedAt: Date.now(), updatedBy: me.uid
+  };
+  if (_pendingPhoto !== undefined) data.photo = _pendingPhoto;
+  try {
+    if (editingEqId) {
+      await fb.update(fb.ref(fb.db, ROOT + '/equipment/' + editingEqId), data);
+    } else {
+      data.createdAt = Date.now(); data.createdBy = me.uid; data.retired = false;
+      const id = newId();
+      await fb.set(fb.ref(fb.db, ROOT + '/equipment/' + id), data);
+    }
+    closeEqModal(); toast('บันทึกทะเบียนครุภัณฑ์แล้ว');
+  } catch (e) { $('eqModalErr').textContent = 'บันทึกไม่สำเร็จ: ' + (e.message || e); $('eqModalErr').classList.remove('hidden'); }
+}
+async function toggleRetire() {
+  if (!editingEqId) return;
+  const eq = EQ[editingEqId]; const next = !eq.retired;
+  if (!confirm(next ? 'ยืนยันเลิกใช้งานครุภัณฑ์นี้?' : 'ยืนยันเรียกครุภัณฑ์นี้กลับมาใช้งาน?')) return;
+  try { await fb.update(fb.ref(fb.db, ROOT + '/equipment/' + editingEqId), { retired: next }); closeEqModal(); toast(next ? 'เลิกใช้งานแล้ว' : 'เรียกกลับมาใช้งานแล้ว'); }
+  catch (e) { toast('ทำรายการไม่สำเร็จ: ' + (e.message || e)); }
+}
+
+/* ---------- นำเข้าจาก Excel ---------- */
+function openImportModal() { $('imp_text').value = ''; $('importPreview').innerHTML = ''; $('importModal').classList.remove('hidden'); }
+function closeImportModal() { $('importModal').classList.add('hidden'); }
+function parseImport() {
+  const raw = $('imp_text').value; const hasHeader = $('imp_hasHeader').checked;
+  let lines = raw.split(/\r?\n/).filter(l => l.trim() !== '');
+  if (hasHeader) lines = lines.slice(1);
+  const cols = ['code','name','categoryText','responsible','responsibleUnit','location','brand','model','serial','purchaseDate','price','fundSource','pmCycleDays','calCycleDays','note','responsibleEmail'];
+  _importRows = lines.map(line => {
+    const cells = line.split('\t');
+    const row = {}; cols.forEach((c, i) => row[c] = (cells[i] || '').trim());
+    row.category = /ครุภัณฑ์/.test(row.categoryText) && !/เครื่องมือ/.test(row.categoryText) ? 'durable' : 'sci';
+    row.valid = !!(row.code && row.name);
+    row.dup = allEq().some(e => e.code === row.code);
+    return row;
+  });
+  if (!_importRows.length) { $('importPreview').innerHTML = '<div class="alert warn">ไม่พบข้อมูลที่วางมา</div>'; return; }
+  const okCount = _importRows.filter(r => r.valid).length;
+  $('importPreview').innerHTML =
+    '<div class="alert ' + (okCount ? 'info' : 'err') + '">พบ ' + _importRows.length + ' แถว · นำเข้าได้ ' + okCount + ' แถว' +
+    (_importRows.some(r => r.dup) ? ' · <span style="color:#8a5a06">มีรหัสซ้ำกับที่มีอยู่แล้วบางแถว (ทำเครื่องหมายสีส้ม)</span>' : '') + '</div>' +
+    '<div class="table-wrap"><table class="list"><thead><tr><th></th><th>รหัส</th><th>ชื่อ</th><th>ประเภท</th><th>ผู้รับผิดชอบ</th><th>หน่วยงาน</th></tr></thead><tbody>' +
+    _importRows.map((r, i) => '<tr style="cursor:default' + (!r.valid ? ';opacity:.5' : r.dup ? ';background:#fdf3e2' : '') + '">' +
+      '<td>' + (r.valid ? '✅' : '❌') + '</td><td class="code">' + esc(r.code) + '</td><td>' + esc(r.name) + '</td><td>' + esc(catLabel(r.category)) + '</td><td>' + esc(r.responsible) + '</td><td>' + esc(r.responsibleUnit) + '</td></tr>').join('') +
+    '</tbody></table></div>' +
+    (okCount ? '<div class="btn-row" style="margin-top:10px"><button class="btn" onclick="confirmImport()">✅ ยืนยันนำเข้า ' + okCount + ' รายการ</button></div>' : '');
+}
+async function confirmImport() {
+  const valid = _importRows.filter(r => r.valid);
+  if (!valid.length) return;
+  const updates = {};
+  valid.forEach(r => {
+    const id = newId();
+    updates[id] = {
+      code: r.code, name: r.name, category: r.category, responsible: r.responsible,
+      responsibleEmail: r.responsibleEmail, responsibleUnit: r.responsibleUnit, location: r.location, brand: r.brand, model: r.model, serial: r.serial,
+      purchaseDate: /^\d{4}-\d{2}-\d{2}$/.test(r.purchaseDate) ? r.purchaseDate : null,
+      price: r.price && !isNaN(Number(r.price)) ? Number(r.price) : null,
+      fundSource: r.fundSource,
+      pmCycleDays: r.pmCycleDays && !isNaN(Number(r.pmCycleDays)) ? Number(r.pmCycleDays) : null,
+      calCycleDays: r.calCycleDays && !isNaN(Number(r.calCycleDays)) ? Number(r.calCycleDays) : null,
+      note: r.note, retired: false, createdAt: Date.now(), createdBy: me.uid
+    };
+  });
+  try {
+    await fb.update(fb.ref(fb.db, ROOT + '/equipment'), updates);
+    closeImportModal(); toast('นำเข้าแล้ว ' + valid.length + ' รายการ');
+  } catch (e) { toast('นำเข้าไม่สำเร็จ: ' + (e.message || e)); }
+}
+
+/* ---------- การแจ้งเตือน ---------- */
+function computeAlerts() {
+  const today = todayISO();
+  const leadPm = Number(SET.pmLeadDays || 14), leadCal = Number(SET.calLeadDays || 30);
+  const list = [];
+  allEq().forEach(eq => {
+    if (eq.retired) return;
+    const pmDue = nextPmDue(eq.id);
+    if (pmDue) { const d = daysDiff(today, pmDue); if (d <= leadPm) list.push({ eqId: eq.id, type: 'pm', label: 'PM (บำรุงรักษา)', dueDate: pmDue, days: d }); }
+    const calDue = nextCalDue(eq.id);
+    if (calDue) { const d = daysDiff(today, calDue); if (d <= leadCal) list.push({ eqId: eq.id, type: 'cal', label: 'สอบเทียบ', dueDate: calDue, days: d }); }
+  });
+  list.sort((a,b) => a.dueDate.localeCompare(b.dueDate));
+  return list;
+}
+function activeIncomingFaults() {
+  return Object.keys(INF || {}).map(k => Object.assign({ id: k }, INF[k]))
+    .filter(f => f.status === 'new')
+    .sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+}
+function renderAlerts() {
+  const list = computeAlerts();
+  const faults = activeIncomingFaults();
+  const overN = list.filter(a => a.days < 0).length;
+  const total = list.length + faults.length;
+  const urgentN = overN + faults.length;
+  const badge = $('badgeAlert'); badge.textContent = total; badge.classList.toggle('zero', !total);
+  badge.classList.toggle('warn', !urgentN && !!total);
+
+  let html = '';
+  if (faults.length) {
+    html += '<h3 style="font-size:14.5px;color:var(--primary-dark);margin-bottom:8px">🛠 แจ้งเครื่องมือชำรุดจากระบบจองใช้เครื่องมือ</h3>';
+    html += faults.map(f => {
+      const eq = f.eqId ? EQ[f.eqId] : null;
+      return '<div class="alert-item over">' +
+        '<div class="main"><b>' + esc(f.eqCode || '') + ' — ' + esc(f.eqName || '') + '</b><br>' +
+        '<span class="muted">อาการ: ' + esc(f.symptom || '-') + (f.detail ? ' · ' + esc(f.detail) : '') + '</span><br>' +
+        '<span class="muted">แจ้งโดย ' + esc(f.reporterName || '-') + (f.reporterOrg ? ' (' + esc(f.reporterOrg) + ')' : '') + ' · พบเมื่อ ' + esc(thaiDate(f.foundDate)) + '</span>' +
+        (!eq ? '<br><span style="color:#a1241a">⚠️ ไม่พบครุภัณฑ์รหัสนี้ในทะเบียน — ตรวจสอบรหัสหรือเพิ่มครุภัณฑ์ก่อน</span>' : '') + '</div>' +
+        '<div class="btn-row">' +
+        (eq ? '<button class="btn sm" onclick="convertIncomingFault(\'' + f.id + '\')">📋 บันทึกเป็นรายการซ่อม</button>' : '') +
+        '<button class="btn ghost sm" onclick="ackIncomingFault(\'' + f.id + '\')">รับทราบ</button>' +
+        '</div></div>';
+    }).join('');
+  }
+  if (list.length) {
+    if (faults.length) html += '<h3 style="font-size:14.5px;color:var(--primary-dark);margin:16px 0 8px">📅 PM / สอบเทียบที่ต้องติดตาม</h3>';
+    html += list.map(a => {
+      const eq = EQ[a.eqId] || {}; const over = a.days < 0;
+      return '<div class="alert-item ' + (over ? 'over' : 'soon') + '">' +
+        '<div class="main"><b>' + esc(eq.code || '') + ' — ' + esc(eq.name || '') + '</b><br>' +
+        '<span class="muted">' + a.label + ' · ผู้รับผิดชอบ: ' + esc(eq.responsible || '-') + '</span></div>' +
+        '<div class="due">ครบกำหนด ' + esc(thaiDate(a.dueDate)) + '<br>' +
+        '<span style="color:' + (over ? '#a1241a' : '#8a5a06') + '">' + (over ? 'เกินกำหนดมาแล้ว ' + Math.abs(a.days) + ' วัน' : 'อีก ' + a.days + ' วัน') + '</span></div>' +
+        '<button class="btn ghost sm" onclick="openEq(\'' + a.eqId + '\')">เปิดครุภัณฑ์</button>' +
+        '</div>';
+    }).join('');
+  }
+  $('alertsBody').innerHTML = html || '<div class="empty">✅ ไม่มีรายการที่ต้องติดตามในขณะนี้</div>';
+  maybeDesktopNotify(list, faults, overN);
+}
+
+async function ackIncomingFault(id) {
+  try { await fb.update(fb.ref(fb.db, ROOT + '/incomingFaults/' + id), { status: 'acknowledged', ackAt: Date.now(), ackBy: me.uid }); toast('รับทราบแล้ว'); }
+  catch (e) { toast('ทำรายการไม่สำเร็จ: ' + (e.message || e)); }
+}
+async function convertIncomingFault(id) {
+  const f = INF[id]; if (!f || !f.eqId || !EQ[f.eqId]) { toast('ไม่พบครุภัณฑ์ที่จับคู่ไว้'); return; }
+  try { await fb.update(fb.ref(fb.db, ROOT + '/incomingFaults/' + id), { status: 'acknowledged', ackAt: Date.now(), ackBy: me.uid }); }
+  catch (e) { toast('ทำรายการไม่สำเร็จ: ' + (e.message || e)); return; }
+  openEq(f.eqId);
+  toggleForm('rep');
+  $('rep_brokenDate').value = f.foundDate || todayISO();
+  $('rep_symptom').value = f.symptom + (f.detail ? ' — ' + f.detail : '') + ' (แจ้งจากระบบจองใช้เครื่องมือ โดย ' + (f.reporterName || '-') + ')';
+  toast('กรอกรายละเอียดการซ่อมแล้วกดบันทึกได้เลย');
+}
+function askNotifyPermission() {
+  if (!('Notification' in window)) { toast('เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือน'); return; }
+  Notification.requestPermission().then(p => toast(p === 'granted' ? 'เปิดการแจ้งเตือนแล้ว' : 'ไม่ได้รับอนุญาตให้แจ้งเตือน'));
+}
+function maybeDesktopNotify(list, faults, overN) {
+  try {
+    const total = list.length + faults.length;
+    if (!('Notification' in window) || Notification.permission !== 'granted' || !total) return;
+    const key = 'lasc_maint_notified_' + todayISO();
+    if (localStorage.getItem(key)) return;
+    localStorage.setItem(key, '1');
+    const n = new Notification('ระบบดูแลครุภัณฑ์ PSU:LASC', {
+      body: (faults.length ? 'แจ้งชำรุดใหม่ ' + faults.length + ' รายการ · ' : '') +
+            (overN ? 'เกินกำหนด ' + overN + ' รายการ · ' : '') + 'รวมที่ต้องติดตาม ' + total + ' รายการ',
+      icon: 'icon-192.png'
+    });
+    n.onclick = () => { window.focus(); showTab('alerts'); n.close(); };
+  } catch (e) {}
+}
+
+/* ---------- ตั้งค่าระบบ ---------- */
+function fillSettingsForm() {
+  $('set_orgName').value = SET.orgName || '';
+  $('set_pmLeadDays').value = SET.pmLeadDays || 14;
+  $('set_calLeadDays').value = SET.calLeadDays || 30;
+  $('set_mailUrl').value = SET.mailUrl || '';
+  $('set_notifyEmail').value = SET.notifyEmail || '';
+  $('set_myName').value = readLocal('lasc_maint_myname', '');
+  const isAdmin = myRole === 'admin';
+  $('settingsLock').classList.toggle('hidden', isAdmin);
+  ['set_orgName','set_pmLeadDays','set_calLeadDays','set_mailUrl','set_notifyEmail','btnSaveSettings'].forEach(id => $(id).disabled = !isAdmin);
+}
+async function saveSettings() {
+  if (myRole !== 'admin') return;
+  const data = {
+    orgName: $('set_orgName').value.trim(), pmLeadDays: Number($('set_pmLeadDays').value) || 14,
+    calLeadDays: Number($('set_calLeadDays').value) || 30, mailUrl: $('set_mailUrl').value.trim(),
+    notifyEmail: $('set_notifyEmail').value.trim()
+  };
+  try { await fb.update(fb.ref(fb.db, ROOT + '/settings'), data); toast('บันทึกค่าตั้งแล้ว'); }
+  catch (e) { toast('บันทึกไม่สำเร็จ: ' + (e.message || e)); }
+}
+async function callMailer(payload) {
+  if (!SET.mailUrl) throw new Error('ยังไม่ได้ตั้งค่า Mailer URL');
+  const idToken = await me.getIdToken();
+  const res = await fetch(SET.mailUrl, { method: 'POST', body: JSON.stringify(Object.assign({ idToken }, payload)) });
+  const j = await res.json();
+  if (!j.ok) throw new Error(j.error || 'ส่งอีเมลไม่สำเร็จ');
+  return j;
+}
+async function testMailer() {
+  const box = $('mailResult'); box.innerHTML = '⏳ กำลังส่ง...';
+  try { await callMailer({ type: 'test' }); box.innerHTML = '<div class="alert ok">✅ ส่งอีเมลทดสอบแล้ว</div>'; }
+  catch (e) { box.innerHTML = '<div class="alert err">❌ ' + esc(e.message) + '</div>'; }
+}
+async function sendDigestMail() {
+  const box = $('mailResult'); const list = computeAlerts();
+  if (!list.length) { box.innerHTML = '<div class="alert info">ไม่มีรายการที่ต้องแจ้งเตือนในขณะนี้</div>'; return; }
+  box.innerHTML = '⏳ กำลังส่ง...';
+  const rows = list.map(a => { const eq = EQ[a.eqId] || {}; return { code: eq.code, name: eq.name, responsible: eq.responsible, type: a.label, dueDate: a.dueDate, days: a.days }; });
+  try { const j = await callMailer({ type: 'digest', to: SET.notifyEmail, rows }); box.innerHTML = '<div class="alert ok">✅ ส่งสรุปแจ้งเตือน ' + rows.length + ' รายการแล้ว ถึง ' + esc(j.sentTo || '-') + '</div>'; }
+  catch (e) { box.innerHTML = '<div class="alert err">❌ ' + esc(e.message) + '</div>'; }
+}
+
+/* ---------- ส่งออก CSV ---------- */
+function csvCell(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+function exportCSV() {
+  const rows = allEq().slice().sort((a,b) => String(a.code||'').localeCompare(String(b.code||''), 'th'));
+  if (!rows.length) { toast('ไม่มีข้อมูลให้ส่งออก'); return; }
+  const head = ['รหัสครุภัณฑ์','ชื่อ','ประเภท','ผู้รับผิดชอบ','หน่วยงาน','สถานที่ตั้ง','ยี่ห้อ','รุ่น','S/N','PM ครั้งถัดไป','สอบเทียบครั้งถัดไป','สถานะ'];
+  const lines = [head.map(csvCell).join(',')];
+  rows.forEach(eq => {
+    const st = eqStatus(eq);
+    lines.push([eq.code, eq.name, catLabel(eq.category), eq.responsible, eq.responsibleUnit, eq.location, eq.brand, eq.model, eq.serial, nextPmDue(eq.id), nextCalDue(eq.id), st.label].map(csvCell).join(','));
+  });
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob); const a = document.createElement('a');
+  a.href = url; a.download = 'ทะเบียนครุภัณฑ์-' + todayISO() + '.csv'; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+}
+
+/* ---------- เริ่มต้น ---------- */
+window.onFirebaseReady = function (api) {
+  fb = api;
+  fb.onAuthStateChanged(fb.auth, async (user) => {
+    detach();
+    me = user; myRole = null;
+    if (!user) { EQ = {}; PM = {}; CAL = {}; REP = {}; INF = {}; currentEq = null; showView('authView'); return; }
+    $('whoEmail').textContent = user.email || user.uid;
+    $('denyEmail').textContent = user.email || '(ไม่ระบุอีเมล)';
+    $('denyUid').textContent = user.uid;
+    try {
+      const s = await fb.get(fb.ref(fb.db, 'allowed/' + user.uid));
+      if (!s.exists()) { showView('denyView'); return; }
+      myRole = s.val() === 'admin' ? 'admin' : 'staff';
+    } catch (e) { showView('denyView'); return; }
+    $('whoRole').textContent = myRole === 'admin' ? '👑 แอดมิน' : '👤 เจ้าหน้าที่';
+    $('whoRole').classList.toggle('role-admin', myRole === 'admin');
+    showView('appView');
+    showTab('list');
+    attach();
+  });
+};
+function init() {
+  $('loginPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') doSignIn(); });
+  if (location.protocol === 'file:') $('fileWarn').classList.remove('hidden');
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<script type="module">
+/* โหลด Firebase SDK แล้วส่งฟังก์ชันที่ต้องใช้กลับไปให้สคริปต์หลัก */
+(async () => {
+  const cfg = window.FIREBASE_CONFIG;
+  if (!cfg || !cfg.apiKey || !cfg.databaseURL) {
+    document.getElementById('loadingView').innerHTML =
+      '<div class="card"><div class="card-body"><div class="alert warn" style="margin:0">ระบบยังไม่ได้เชื่อมต่อฐานข้อมูล — ผู้ดูแลระบบต้องตั้งค่า <code>window.FIREBASE_CONFIG</code> ใน index.html ก่อน (ดู README.md)</div></div></div>';
+    return;
+  }
+  const V = 'https://www.gstatic.com/firebasejs/10.12.5/';
+  try {
+    const [appMod, authMod, dbMod] = await Promise.all([
+      import(V + 'firebase-app.js'), import(V + 'firebase-auth.js'), import(V + 'firebase-database.js')
+    ]);
+    const app = appMod.initializeApp(cfg);
+    const auth = authMod.getAuth(app);
+    try { await authMod.setPersistence(auth, authMod.browserLocalPersistence); } catch (e) {}
+    authMod.getRedirectResult(auth).catch((e) => {
+      const b = document.getElementById('authErr');
+      if (b && window.authMessage) { b.textContent = window.authMessage(e); b.classList.remove('hidden'); }
+    });
+    window.onFirebaseReady({
+      auth, db: dbMod.getDatabase(app),
+      GoogleAuthProvider: authMod.GoogleAuthProvider, signInWithPopup: authMod.signInWithPopup,
+      signInWithRedirect: authMod.signInWithRedirect,
+      signIn: authMod.signInWithEmailAndPassword, signOut: authMod.signOut,
+      resetPassword: authMod.sendPasswordResetEmail, onAuthStateChanged: authMod.onAuthStateChanged,
+      ref: dbMod.ref, set: dbMod.set, get: dbMod.get, update: dbMod.update, onValue: dbMod.onValue, push: dbMod.push
+    });
+  } catch (e) {
+    document.getElementById('loadingView').innerHTML =
+      '<div class="card"><div class="card-body"><div class="alert err" style="margin:0">โหลดระบบคลาวด์ไม่สำเร็จ — ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วรีเฟรชหน้าเว็บ</div></div></div>';
+  }
+})();
+</script>
+</body>
+</html>
